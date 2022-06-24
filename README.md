@@ -6,6 +6,8 @@ Implementation of paper: [Multi-Interest Network with Dynamic Routing for Recomm
 
 [Amazon books metadata](http://deepyeti.ucsd.edu/jianmo/amazon/index.html), choose `Books metadata (2,935,525 products)` from the Files table.
 
+# Why not use ratings to mark user interest?
+
 # References
 > [1] Ups and downs: Modeling the visual evolution of fashion trends with one-class collaborative filtering R. He, J. McAuley WWW, 2016;
 > 
