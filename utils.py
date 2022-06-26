@@ -129,7 +129,7 @@ def pad_or_cut(seq, length):
         # len(seq) - 1 - x + 1 = length --> x = len(seq) - length
         return seq[len(seq) - length:]
     else:
-        return np.concatenate((np.array([0] * (length - len(seq))), seq))
+        return np.concatenate((np.array(['<pad>'] * (length - len(seq))), seq))
 
 
 def query_history_books(timestamp, user_rates, his_len):
@@ -141,17 +141,26 @@ def query_history_books(timestamp, user_rates, his_len):
     return history_books
 
 
-def build_samples(rates, all_user_rates, valid_books, args):
+def build_samples(
+        rates, 
+        all_user_rates, 
+        valid_books, 
+        user_encoder,
+        book_encoder,
+        args
+    ):
     samples = []
     candidates = list(valid_books)
     for rate in rates:
         his = query_history_books(rate[2], all_user_rates[rate[0]], args.his_len)
-        tar = rate[1]
-        samples.append({'his': his, 'tar': tar, 'label': 1})
+        his = [book_encoder[book_id] for book_id in his]
+        tar = book_encoder[rate[1]]
+        samples.append({'user': user_encoder[rate[0]], 'his': his, 'tar': tar, 'label': 1})
         # negative sampling
         neg_tar = random.choices(candidates, k = args.n_neg)
         for tar in neg_tar:
-            samples.append({'his': his, 'tar': tar, 'label': 0})
+            tar = book_encoder[tar]
+            samples.append({'user': user_encoder[rate[0]], 'his': his, 'tar': tar, 'label': 0})
     
     return samples
 

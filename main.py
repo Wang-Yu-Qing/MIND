@@ -16,8 +16,22 @@ if __name__ == '__main__':
 
     all_train_rates, all_test_rates = split_train_and_test_rates(all_user_rates, args.train_frac)
 
-    train_samples = build_samples(all_train_rates, all_user_rates, valid_books, args)
-    test_samples = build_samples(all_test_rates, all_user_rates, valid_books, args)
+    train_samples = build_samples(
+        all_train_rates, 
+        all_user_rates, 
+        valid_books, 
+        user_encoder,
+        book_encoder,
+        args
+    )
+    test_samples = build_samples(
+        all_test_rates, 
+        all_user_rates, 
+        valid_books, 
+        user_encoder,
+        book_encoder,
+        args
+    )
 
     pkl_save("data/train_samples.pkl", train_samples)
     pkl_save("data/test_samples.pkl", test_samples)
