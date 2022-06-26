@@ -8,7 +8,7 @@ import pandas as pd
 
 def parse_args():
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('--data_frac', type=float, default=0.3)
+    argparser.add_argument('--data_frac', type=float, default=0.15)
     argparser.add_argument('--min_user_freq', type=int, default=10)
     argparser.add_argument('--min_book_freq', type=int, default=10)
     argparser.add_argument('--max_user_freq', type=int, default=200)
@@ -21,11 +21,11 @@ def parse_args():
     return args
 
 
-def get_valid_user_and_book_set(data_frac):
+def get_valid_user_and_book_set(args):
     user_freq, book_freq = {}, {}
     with open('data/ratings_Books.csv', 'r') as f:
         for line in f.readlines():
-            if random.random() < data_frac:
+            if random.random() < args.data_frac:
                 # user, item, rating, timestamp
                 splitted = line.split(",")
                 try:
@@ -129,12 +129,12 @@ def pad_or_cut(seq, length):
         # len(seq) - 1 - x + 1 = length --> x = len(seq) - length
         return seq[len(seq) - length:]
     else:
-        return np.concatenate((seq, np.array([0] * (length - len(seq)))))
+        return np.concatenate((np.array([0] * (length - len(seq))), seq))
 
 
-def query_history_books(user_id, timestamp, user_rates, his_len):
+def query_history_books(timestamp, user_rates, his_len):
     bool_idx = user_rates['timestamp'] < timestamp
-    history_books = user_rates['timestamp'].loc[bool_idx, ['book_id']].values
+    history_books = user_rates['book_id'].loc[bool_idx].values
     if len(history_books) != his_len:
         history_books = pad_or_cut(history_books, his_len)
 
@@ -145,7 +145,7 @@ def build_samples(rates, all_user_rates, valid_books, args):
     samples = []
     candidates = list(valid_books)
     for rate in rates:
-        his = query_history_books(rate[0], rate[2], all_user_rates[rate[0]], args.his_len)
+        his = query_history_books(rate[2], all_user_rates[rate[0]], args.his_len)
         tar = rate[1]
         samples.append({'his': his, 'tar': tar, 'label': 1})
         # negative sampling
@@ -161,6 +161,6 @@ def pkl_save(filepath, obj):
         f.write(pickle.dumps(obj))
 
 
-def pkl_read(filepath, obj):
+def pkl_read(filepath):
     with open(filepath, "rb") as f:
         return pickle.loads(f.read())

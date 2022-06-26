@@ -6,7 +6,16 @@ Implementation of paper: [Multi-Interest Network with Dynamic Routing for Recomm
 
 [Amazon books metadata](http://deepyeti.ucsd.edu/jianmo/amazon/index.html), choose `Books metadata (2,935,525 products)` from the Files table.
 
-# Why not use ratings to mark user interest?
+# How to run
+1. Create a folder called `data`. Download and unzip the data files into the `data` folder, such that the `data` folder contains two files: `meta_Books.json` and `ratings_Books.csv`.
+2. Run with default config: `python main.py`
+3. The full data size is big. If you are eager to see some result or want to make some tests, use a small `data_frac` to decrease the amount of data used for sample building
+
+# Something about sample building
+1. Each rating action reflect user's interest upon that book, so each rating action is one postive sample, no matter what the actual rating value is. From my point of view, If the user read the book and gave a rate about it, he is interested in the book anyway. Low rate means he is disappointed with the content, rather than "not interested".
+2. Split all the rating actions to 19:1 just as described in the paper.
+3. From each rating action, use that user's rating actions before the current rating time as history behaviors.
+4. For negative samples, keep the history behavior same as the positive sample, but randomly draw target books from the whole book pool.
 
 # References
 > [1] Ups and downs: Modeling the visual evolution of fashion trends with one-class collaborative filtering R. He, J. McAuley WWW, 2016;
