@@ -1,4 +1,5 @@
 import json
+import math
 import pickle
 import random
 import argparse
@@ -8,13 +9,14 @@ import pandas as pd
 
 def parse_args():
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('--data_frac', type=float, default=0.15)
+    argparser.add_argument('--data_frac', type=float, default=0.05)
     argparser.add_argument('--min_user_freq', type=int, default=10)
     argparser.add_argument('--min_book_freq', type=int, default=10)
     argparser.add_argument('--max_user_freq', type=int, default=200)
     argparser.add_argument('--train_frac', type=int, default=0.95)
     argparser.add_argument('--his_len', type=int, default=100)
     argparser.add_argument('--n_neg', type=int, default=10)
+    argparser.add_argument('--k', type=int, default=4)
 
     args = argparser.parse_args()
 
@@ -147,6 +149,7 @@ def build_samples(
         valid_books, 
         user_encoder,
         book_encoder,
+        all_user_capsules_num,
         args
     ):
     samples = []
@@ -155,14 +158,26 @@ def build_samples(
         his = query_history_books(rate[2], all_user_rates[rate[0]], args.his_len)
         his = [book_encoder[book_id] for book_id in his]
         tar = book_encoder[rate[1]]
-        samples.append({'user': user_encoder[rate[0]], 'his': his, 'tar': tar, 'label': 1})
+        samples.append({'user': user_encoder[rate[0]], 'his': his, 'tar': tar, 'label': 1, 'cap_num': all_user_capsules_num[rate[0]]})
         # negative sampling
         neg_tar = random.choices(candidates, k = args.n_neg)
         for tar in neg_tar:
             tar = book_encoder[tar]
-            samples.append({'user': user_encoder[rate[0]], 'his': his, 'tar': tar, 'label': 0})
+            samples.append({'user': user_encoder[rate[0]], 'his': his, 'tar': tar, 'label': 0, 'cap_num': all_user_capsules_num[rate[0]]})
     
     return samples
+
+
+def get_capsules_num(k, user_rating_size):
+    return int(max(1, min(k, math.log(user_rating_size, 2))))
+
+
+def get_user_capsules_num(k, all_user_rating_size):
+    all_user_capsules_num = {}
+    for user_id, ratings in all_user_rating_size.items():
+        all_user_capsules_num[user_id] = get_capsules_num(k, len(ratings))
+
+    return all_user_capsules_num
 
 
 def pkl_save(filepath, obj):
