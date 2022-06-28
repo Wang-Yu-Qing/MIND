@@ -9,6 +9,7 @@ if __name__ == '__main__':
     all_user_rates = parse_rating_data(valid_users, valid_books)
     book_cates = read_book_meta(valid_books)
     valid_cates = set(itertools.chain.from_iterable(list(book_cates.values())))
+    all_user_capsules_num = get_user_capsules_num(args.k, all_user_rates)
 
     user_encoder, user_decoder = encode_users(valid_users)
     book_encoder, book_decoder = encode_books(valid_books)
@@ -22,6 +23,7 @@ if __name__ == '__main__':
         valid_books, 
         user_encoder,
         book_encoder,
+        all_user_capsules_num,
         args
     )
     test_samples = build_samples(
@@ -30,6 +32,7 @@ if __name__ == '__main__':
         valid_books, 
         user_encoder,
         book_encoder,
+        all_user_capsules_num,
         args
     )
 
