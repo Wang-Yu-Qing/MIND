@@ -17,6 +17,14 @@ def parse_args():
     argparser.add_argument('--his_len', type=int, default=100)
     argparser.add_argument('--n_neg', type=int, default=10)
     argparser.add_argument('--k', type=int, default=4)
+    # TODO: check values
+    argparser.add_argument('--embed_dim', type=int, default=4)
+    argparser.add_argument('--low_cap_dim', type=int, default=4)
+    argparser.add_argument('--high_cap_dim', type=int, default=4)
+    argparser.add_argument('--routing_rounds', type=int, default=3)
+
+    
+
 
     args = argparser.parse_args()
 
@@ -129,7 +137,7 @@ def pad_or_cut(seq, length):
     if len(seq) > length:
         # cut the front
         # len(seq) - 1 - x + 1 = length --> x = len(seq) - length
-        return seq[len(seq) - length:]
+        return np.array(seq[len(seq) - length:])
     else:
         return np.concatenate((np.array(['<pad>'] * (length - len(seq))), seq))
 
@@ -141,6 +149,16 @@ def query_history_books(timestamp, user_rates, his_len):
         history_books = pad_or_cut(history_books, his_len)
 
     return history_books
+
+
+# book cate coverage is too small to use
+def query_book_cates(books, book_cates, cate_encoder):
+    cates = []
+    for book_id in books:
+        # book's max cates number found is 5
+        cates.append(pad_or_cut([cate_encoder[cate] for cate in book_cates[book_id]], 5))
+
+    return cates
 
 
 def build_samples(
@@ -158,12 +176,24 @@ def build_samples(
         his = query_history_books(rate[2], all_user_rates[rate[0]], args.his_len)
         his = [book_encoder[book_id] for book_id in his]
         tar = book_encoder[rate[1]]
-        samples.append({'user': user_encoder[rate[0]], 'his': his, 'tar': tar, 'label': 1, 'cap_num': all_user_capsules_num[rate[0]]})
+        samples.append({
+            'user': user_encoder[rate[0]], 
+            'his': his, 
+            'tar': tar, 
+            'label': 1, 
+            'cap_num': all_user_capsules_num[rate[0]]
+        })
         # negative sampling
         neg_tar = random.choices(candidates, k = args.n_neg)
         for tar in neg_tar:
             tar = book_encoder[tar]
-            samples.append({'user': user_encoder[rate[0]], 'his': his, 'tar': tar, 'label': 0, 'cap_num': all_user_capsules_num[rate[0]]})
+            samples.append({
+                'user': user_encoder[rate[0]], 
+                'his': his, 
+                'tar': tar, 
+                'label': 0, 
+                'cap_num': all_user_capsules_num[rate[0]]
+            })
     
     return samples
 
