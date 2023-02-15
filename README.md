@@ -2,9 +2,9 @@
 Implementation of paper: [Multi-Interest Network with Dynamic Routing for Recommendation at Tmall](https://arxiv.org/pdf/1904.08030.pdf)
 
 # Dataset
-[Amazon books ratings](http://jmcauley.ucsd.edu/data/amazon/), choose `Books ratings only (22,507,155 ratings)` from the Files table.
+[Amazon books ratings](https://nijianmo.github.io/amazon/index.html), in **Files -> "Small" subsets for experimentation -> choose Books ratings only in the table**.
 
-[Amazon books metadata](http://deepyeti.ucsd.edu/jianmo/amazon/index.html), choose `Books metadata (2,935,525 products)` from the Files table.
+[Amazon books metadata](https://nijianmo.github.io/amazon/index.html), int **Files -> Complete review data -> choose Books metadata in the table**.
 
 # How to run
 1. Create a folder called `data`. Download and unzip the data files into the `data` folder, such that the `data` folder contains two files: `meta_Books.json` and `ratings_Books.csv`.
