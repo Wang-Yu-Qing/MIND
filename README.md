@@ -4,7 +4,7 @@ Implementation of paper: [Multi-Interest Network with Dynamic Routing for Recomm
 # Dataset
 [Amazon books ratings](https://nijianmo.github.io/amazon/index.html), in **Files -> "Small" subsets for experimentation -> choose Books ratings only in the table**.
 
-[Amazon books metadata](https://nijianmo.github.io/amazon/index.html), int **Files -> Complete review data -> choose Books metadata in the table**.
+[Amazon books metadata](https://jmcauley.ucsd.edu/data/amazon_v2/index.html), int **Files -> Complete review data -> choose Books metadata in the table**.
 
 # How to run
 1. Create a folder called `data`. Download and unzip the data files into the `data` folder, such that the `data` folder contains two files: `meta_Books.json` and `ratings_Books.csv`.
