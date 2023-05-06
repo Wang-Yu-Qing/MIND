@@ -40,7 +40,7 @@ class MIND(th.nn.Module):
         # masking, make padding indices' routing logit as INT_MAX so that softmax result is 0
         # (bs, L) -> (bs, 1, L) -> (bs, K, L)
         mask = (his != 0).unsqueeze(1).tile(1, self.K, 1)
-        drop = th.ones_like(mask) * -(1 << 31)
+        drop = (th.ones_like(mask) * -(1 << 31)).type(th.float32)
 
         his = self.itemEmbeds(his) # (bs, L, D)
         his = th.matmul(his, self.S)
